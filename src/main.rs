@@ -19,10 +19,7 @@ fn main() -> Result<()> {
     event_loop.run(
         Some(Duration::from_millis(16)),
         &mut compositor_state,
-        |state| {
-            // TODO: Call this once we have an actual render loop
-            state.on_frame_done()
-        },
+        |_| {},
     )?;
 
     Ok(())

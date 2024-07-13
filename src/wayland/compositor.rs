@@ -1,4 +1,9 @@
-use smithay::{delegate_compositor, reexports::wayland_server::{protocol::wl_surface::WlSurface, Client}, wayland::compositor::{CompositorClientState, CompositorHandler, CompositorState}};
+use smithay::{
+    backend::renderer::utils::on_commit_buffer_handler,
+    delegate_compositor,
+    reexports::wayland_server::{protocol::wl_surface::WlSurface, Client},
+    wayland::compositor::{CompositorClientState, CompositorHandler, CompositorState},
+};
 
 use crate::{Infwinity, InfwinityClientState};
 
@@ -9,11 +14,16 @@ impl CompositorHandler for Infwinity {
     }
 
     fn client_compositor_state<'a>(&self, client: &'a Client) -> &'a CompositorClientState {
-        &client.get_data::<InfwinityClientState>().expect("Missing client data?").client_state
+        &client
+            .get_data::<InfwinityClientState>()
+            .expect("Missing client data?")
+            .client_state
     }
 
     fn commit(&mut self, surface: &WlSurface) {
-        log::info!("Buffer commit received: {surface:?}");
+        on_commit_buffer_handler::<Self>(surface);
+
+        self.on_commit_xdg(surface);
     }
 }
 
