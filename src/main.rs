@@ -6,6 +6,8 @@ use smithay::reexports::calloop::EventLoop;
 use infwinity::Infwinity;
 
 fn main() -> Result<()> {
+    simple_logger::init_with_level(log::Level::Debug).expect("Failed to initialize logger?");
+
     // Create the overall event loop that the compositor spins on
     let mut event_loop: EventLoop<Infwinity> = EventLoop::try_new()?;
 
@@ -14,10 +16,14 @@ fn main() -> Result<()> {
 
     // Keep the event loop running for the lifetime of the application
     // Other modules will add their own event handlers to this loop
-    event_loop.run(Some(Duration::from_millis(16)), &mut compositor_state, |state| {
-        // TODO: Call this once we have an actual render loop
-        state.on_frame_done()
-    })?;
+    event_loop.run(
+        Some(Duration::from_millis(16)),
+        &mut compositor_state,
+        |state| {
+            // TODO: Call this once we have an actual render loop
+            state.on_frame_done()
+        },
+    )?;
 
     Ok(())
 }

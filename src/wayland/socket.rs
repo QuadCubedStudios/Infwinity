@@ -9,11 +9,11 @@ impl Infwinity {
         // Estabish the unix socket we will listen on
         let socket = ListeningSocketSource::new_auto()?;
 
-        eprintln!("Listening on: {:?}", socket.socket_name());
+        log::info!("Listening on: {:?}", socket.socket_name());
 
         // Listen for clients connecting to the socket
         event_loop.insert_source(socket, |client_stream, _meta, state| {
-            eprintln!("Client joined: {:?}", client_stream.peer_addr());
+            log::info!("Client joined: {:?}", client_stream.peer_addr());
 
             // And attach them to the server
             state

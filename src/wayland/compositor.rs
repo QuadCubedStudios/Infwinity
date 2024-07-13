@@ -2,6 +2,7 @@ use smithay::{delegate_compositor, reexports::wayland_server::{protocol::wl_surf
 
 use crate::{Infwinity, InfwinityClientState};
 
+/// Handles requests from clients for Surfaces
 impl CompositorHandler for Infwinity {
     fn compositor_state(&mut self) -> &mut CompositorState {
         &mut self.compositor_state
@@ -11,8 +12,8 @@ impl CompositorHandler for Infwinity {
         &client.get_data::<InfwinityClientState>().expect("Missing client data?").client_state
     }
 
-    fn commit(&mut self, _surface: &WlSurface) {
-        todo!()
+    fn commit(&mut self, surface: &WlSurface) {
+        log::info!("Buffer commit received: {surface:?}");
     }
 }
 

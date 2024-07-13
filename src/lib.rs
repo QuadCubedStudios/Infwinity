@@ -1,4 +1,5 @@
 use smithay::{
+    input::SeatState,
     reexports::{
         calloop::{generic::Generic, Interest, Mode, PostAction},
         wayland_server::{
@@ -6,7 +7,11 @@ use smithay::{
             Display, DisplayHandle,
         },
     },
-    wayland::compositor::{CompositorClientState, CompositorState},
+    wayland::{
+        compositor::{CompositorClientState, CompositorState},
+        shell::xdg::XdgShellState,
+        shm::ShmState,
+    },
 };
 
 mod backends;
@@ -18,6 +23,9 @@ mod wayland;
 /// by the event loop
 pub struct Infwinity {
     compositor_state: CompositorState,
+    seat_state: SeatState<Self>,
+    shm_state: ShmState,
+    xdg_shell_state: XdgShellState,
 
     display_handle: DisplayHandle,
 }
@@ -38,13 +46,15 @@ impl Infwinity {
         // Construct the compositor and all of its state data first
         let mut compositor = Self {
             compositor_state: CompositorState::new::<Self>(&display_handle),
+            seat_state: SeatState::new(),
+            shm_state: ShmState::new::<Self>(&display_handle, vec![]),
+            xdg_shell_state: XdgShellState::new::<Self>(&display_handle),
 
             display_handle,
         };
 
         // Then handle all initialization steps
         compositor.init_socket(&event_loop)?;
-        // compositor.init_compositor(&event_loop)?;
 
         Ok(compositor)
     }
@@ -58,7 +68,7 @@ impl Infwinity {
         event_loop.insert_source(
             Generic::new(display, Interest::READ, Mode::Level),
             |_ready, display, state| {
-                eprintln!("Client events received");
+                log::info!("Client events received");
 
                 // SAFETY: display is not dropped
                 unsafe {
@@ -87,10 +97,10 @@ struct InfwinityClientState {
 
 impl ClientData for InfwinityClientState {
     fn initialized(&self, client_id: ClientId) {
-        eprintln!("Client Initialized: {client_id:?}");
+        log::info!("Client Initialized: {client_id:?}");
     }
 
     fn disconnected(&self, client_id: ClientId, reason: DisconnectReason) {
-        eprintln!("Client Disconnected: {client_id:?} {reason:?}");
+        log::info!("Client Disconnected: {client_id:?} {reason:?}");
     }
 }

@@ -9,4 +9,6 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow = "1.0"
+log = "0.4"
+simple_logger = "5.0"
 smithay = { git = "https://github.com/Smithay/smithay", features = ["wayland_frontend", "backend_winit"] }
